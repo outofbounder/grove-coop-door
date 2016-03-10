@@ -12,7 +12,8 @@ int tempValue;
 
 //LIGHT SENSOR ON A1
 const int lightSensorPin = 1;  
-int lightThresh=150;       //the threshold to turn on or off the LED
+const int dayLightThresh=150;       //the threshold for mornings
+const int dayLightThresh=40;       //the threshold for nights
 bool isDaytime=false;
 int daytimeMinutes=0;
 int nightMinutes=0;
