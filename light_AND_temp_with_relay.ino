@@ -12,8 +12,8 @@ int tempValue;
 
 //LIGHT SENSOR ON A1
 const int lightSensorPin = 1;  
-const int dayLightThresh=150;       //the threshold for mornings
-const int dayLightThresh=40;       //the threshold for nights
+const int amLightThresh=150;       //the threshold for mornings
+const int pmLightThresh=40;       //the threshold for nights
 bool isDaytime=false;
 int daytimeMinutes=0;
 int nightMinutes=0;
@@ -59,11 +59,12 @@ void Startup(){
   //get startup values
   tempValue = GetTemp();
   
-  printMessage("[Light Threshold]= ",lightThresh);
-  printMessage("[Light Value]= ",analogRead(lightSensorPin));
+  printMessage("[Day Light Threshold]= ",amLightThresh);
+  printMessage("[Evening Light Threshold]= ",pmLightThresh);
+  printMessage("[Current Light Value]= ",analogRead(lightSensorPin));
   Serial.println();
   printMessage("[Temp Threshold]= ",tempThresh);
-  printMessage("[Temp Value]= ",tempValue);
+  printMessage("[Current Temp Value]= ",tempValue);
   Serial.println();
   printMessage("[Door Value]= ", isDaytime);
   Serial.println("[0=Off, 1=On]");
@@ -79,12 +80,12 @@ void CheckDaylight()
   int lightValue = getAverageLightInAMinute();
   tempValue = GetTemp();
   
-  if(lightValue>lightThresh && tempValue>tempThresh)  //day time and above temp
+  if(lightValue>amLightThresh && tempValue>tempThresh)  //light above am threshold and above temp
   {        
     //only open if door is not already open to prevent motor binding!!
     //only open if button was not pushed to open it
    // if (isDaytime==false && doorValue!=1)
-    if (isDaytime==false && doorOverride==false)
+    if (isDaytime==false && doorOverride==false)  //daytime and not closed
     {
       openCoopDoor(); //opens relay
       printMessage("Good Morning! ",lightValue);       
@@ -96,8 +97,7 @@ void CheckDaylight()
       daytimeMinutes++;
     }
   }
-  else  //the light value has dropped below threshold    
-  {
+  else if(lightValue<pmLightThresh) {        //the light value has dropped below threshold    
     //close if daytime (door opened during session)
     //close if door was left open (restarted) 
     if (isDaytime==true)
